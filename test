@@ -1,4 +1,5 @@
-void main()
-{
-  System.out.println("#becausemath"); 
+public class test {
+  public static void main(String[] args) {
+    System.out.println("#becausemath");
+  }
 }
