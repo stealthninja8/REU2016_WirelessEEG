@@ -1,4 +1,5 @@
 % analysis1.m
+% Steve Heinisch, Zoe Kendall, and Sam Morris
 % This script [will] read in an Excel file and filter the contained data,
 % then epoch it into 1-s segments. Epochs will then be analyzed by an FFT
 % and averaged.
@@ -8,6 +9,7 @@ home;
 % ========================================================================
 %                               CONSTANTS
 % ========================================================================
+filename = 'C:\Users\zkendall\zkendall\Documents\SPIRE-EIT\srest1.xlsx';
 desired_electrode = 'Cz';
 
 sampleRate = 2048;
@@ -18,7 +20,7 @@ N = sampleRate*duration;
 %                                SCRIPT
 % ========================================================================
 % read data and get the electrode labels as a cell array
-[num, txt, raw] = xlsread('srest1.xlsx');
+[num, txt, raw] = xlsread(filename);
 labels = raw(9, 1:end);
 
 % find the column number of the desired electrode
