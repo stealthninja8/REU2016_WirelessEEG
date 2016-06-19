@@ -16,12 +16,23 @@ sampleRate = 2048;
 duration = 10;
 N = sampleRate*duration;
 
+% classdef electrode
+%     properties
+%         bool
+%         name
+%     end
+% methods
+%     function 
+
 % ========================================================================
 %                                SCRIPT
 % ========================================================================
-% read data and get the electrode labels as a cell array
 [num, txt, raw] = xlsread(filename);
+
+% read data and get the electrode labels as a cell array
 labels = raw(9, 1:end);
+frames = num(7:end, 1);
+time = frames ./ sampleRate;
 
 % find the column number of the desired electrode
 elec = 1;
@@ -31,9 +42,29 @@ for i = 1:length(labels)
         break;
     end
 end
+% elec
+% labels(elec)
+data = num(7:end,1:end);
+doi = data(1:end, elec);
+
+% Hopefully, the next two lines bandpass filters our data.
+bpFilt = designfilt('bandpassFIR', 'FilterOrder', 20, 'CutoffFrequency1', 1, 'CutoffFrequency2', 65, 'SampleRate', sampleRate);
+dataOut = filter(bpFilt,doi);
+
+d = fdesign.notch(2, 60, 35, 2048);
+Hd = design(d);
+newData = filter(Hd, dataOut);
+
+% [num,txt,raw] = xlsread(filename, 'F9:F9')
+% if strcmp(txt, 'F1') == 1
+%     raw = xlsread(filename, 'F:F');
+%     x = 1
+% end
 
 % plot the data
-data = num(7:end,1:end);
-plot(data(1:end,elec))
-xlabel('Sample')
+figure(1)
+subplot(2,1,1), plot(time, dataOut)
+subplot(2,1,2), plot(time, newData)
+xlabel('Time (s)')
 ylabel('EEG (V)')
+%ylim([1e-3, 1.6e-3])
