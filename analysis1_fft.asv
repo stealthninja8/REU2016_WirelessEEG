@@ -1,0 +1,66 @@
+% analysis1.m
+% Steve Heinisch, Zoe Kendall, and Sam Morris
+% This script [will] read in an Excel file and filter the contained data,
+% then epoch it into 1-s segments. Epochs will then be analyzed by an FFT
+% and averaged.
+
+close all;
+home;
+% ========================================================================
+%                               CONSTANTS
+% ========================================================================
+filename = 'C:\Users\zkendall\zkendall\Documents\SPIRE-EIT\srest1.xlsx';
+desired_electrode = 'Cz';
+
+sampleRate = 2048;
+duration = 10;
+N = sampleRate*duration;
+
+% classdef electrode
+%     properties
+%         bool
+%         name
+%     end
+% methods
+%     function 
+
+% ========================================================================
+%                                SCRIPT
+% ========================================================================
+[num, txt, raw] = xlsread(filename);
+
+% read data and get the electrode labels as a cell array
+labels = raw(9, 1:end);
+frames = num(7:end, 1);
+time = frames ./ sampleRate;
+
+% find the column number of the desired electrode
+elec = 1;
+for i = 1:length(labels)
+    if strcmp(labels(i), desired_electrode) == 1
+        elec = i;
+        break;
+    end
+end
+% elec
+% labels(elec)
+data = num(7:end,1:end);
+doi = data(1:end, elec);
+
+% Hopefully, the next two lines bandpass filters our data.
+bpFilt = designfilt('bandpassFIR', 'FilterOrder', 20, 'CutoffFrequency1', 1, 'CutoffFrequency2', 65, 'SampleRate', sampleRate);
+dataOut = filter(bpFilt,doi);
+
+notch = fdesign.notch(2, 
+
+% [num,txt,raw] = xlsread(filename, 'F9:F9')
+% if strcmp(txt, 'F1') == 1
+%     raw = xlsread(filename, 'F:F');
+%     x = 1
+% end
+
+% plot the data
+plot(time, dataOut)
+xlabel('Sample')
+ylabel('EEG (V)')
+ylim([1e-3, 1.6e-3])
