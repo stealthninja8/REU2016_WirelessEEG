@@ -21,7 +21,7 @@ N = sampleRate*duration;
 % ========================================================================
 [num, txt, raw] = xlsread(filename);
 
-read data and get the electrode labels as a cell array
+% read data and get the electrode labels as a cell array
 labels = raw(9, 1:end);
 frames = num(7:end, 1);
 time = frames ./ sampleRate;
