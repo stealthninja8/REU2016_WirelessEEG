@@ -19,12 +19,12 @@ N = sampleRate*duration;
 % ========================================================================
 %                                SCRIPT
 % ========================================================================
-[num, txt, raw] = xlsread(filename);
+%[num, txt, raw] = xlsread(filename);
 
 % read data and get the electrode labels as a cell array
-labels = raw(9, 1:end);
-frames = num(7:end, 1);
-time = frames ./ sampleRate;
+%labels = raw(9, 1:end);
+%frames = num(7:end, 1);
+%time = frames ./ sampleRate;
 
 % find the column number of the desired electrode
 elec = 1;
@@ -36,8 +36,8 @@ for i = 1:length(labels)
 end
 % elec
 % labels(elec)
-data = num(7:end,1:end);
-doi = data(1:end, elec);
+%data = num(7:end,1:end);
+%doi = data(1:end, elec);
 
 % Hopefully, the next two lines bandpass filters our data.
 bpFilt = designfilt('bandpassFIR', 'FilterOrder', 20, 'CutoffFrequency1', 1, 'CutoffFrequency2', 65, 'SampleRate', sampleRate);
@@ -50,7 +50,7 @@ newData = filter(Hd, dataOut);
 [b,a] = butter(2, 1*2/sampleRate);
 butterData1 = filter(b,a,dataOut);
 [x,y] = butter(2, 62.5*2/sampleRate);
-butterData2 = filter(x,y,dataOut);
+butterData2 = filter(x,y,butterData1);
 
 % [num,txt,raw] = xlsread(filename, 'F9:F9')
 % if strcmp(txt, 'F1') == 1
@@ -58,7 +58,7 @@ butterData2 = filter(x,y,dataOut);
 %     x = 1
 % end
 
-% X = fft(newData);
+% X = fft(butterData2);
 
 % plot the data
 figure(1)
