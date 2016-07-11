@@ -3,7 +3,7 @@
 * To change this template file, choose Tools | Templates
 * and open the template in the editor.
 */
-//package data.marking;
+package data.marking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -23,7 +23,7 @@ public class DataMarking {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-        String dataFileName = "C:/Users/zkendall/Downloads/SteveMove70_Trial1.exp";
+        String dataFileName = "B:/REU Data/SteveMove70_Trial1.exp";
         ArrayList<Double> value1 = new ArrayList<Double>();
         ArrayList<Double> value2 = new ArrayList<Double>();
         
@@ -73,50 +73,46 @@ public class DataMarking {
         value1.remove(j);
         }
         
-        // find the overall average of the data
         double sum = 0;
         for (double val : value2) {
             sum += val;
         }
         double avg = sum/value2.size();
         
-        
+        double[] mark = new double[value1.size()];
         ArrayList<Double> maxes = new ArrayList<Double>();
         ArrayList<Double> mins = new ArrayList<Double>();
         ArrayList<Double> fmin = new ArrayList<Double>();
         ArrayList<Double> fmax = new ArrayList<Double>();
         
-        double min = avg;
-        double max = avg;
         boolean addMax = true;
         boolean addMin = true;
         j = 175;
         while(j<value2.size()-40){
         	//System.out.println((value2.get(j+40)-value2.get(j)));
-            if ((value2.get(j+40)-value2.get(j))/40 <= -0.00001 && addMax) {
+            
+            if ((value2.get(j+40)-value2.get(j))/40 <= -0.000055 && addMax && value2.get(j) > avg ) {
+                if (fmin.size() > 0 && j > fmin.get(fmin.size()-1) + 500) {
                 maxes.add(value2.get(j-175));
                 fmax.add(value1.get(j-175));
                 addMax = false;
                 addMin = true;
-            } else if ((value2.get(j+40)-value2.get(j))/40 >= 0.00001 && addMin) {
+                mark[j] = -0.03;
+                } else if (fmin.size() == 0) {
+                    maxes.add(value2.get(j-175));
+                fmax.add(value1.get(j-175));
+                addMax = false;
+                addMin = true;
+                mark[j] = -0.03;
+                }
+            } else if ((value2.get(j+40)-value2.get(j))/40 >= 0.00001 && addMin && value2.get(j) < avg) {
                 mins.add(value2.get(j-175));
                 fmin.add(value1.get(j-175));
                 addMin = false;
                 addMax = true;
-            }
-            /*
-            if(value2.get(j) < min && value2.get(j-40)-value2.get(j) > 0 && value2.get(j)-value2.get(j+40) < 0) {
-                mins.add(value2.get(j));
-                System.out.println("min --> " + j);
-                min = value2.get(j);
-                max = avg;
-            }
-            if(value2.get(j) > max && value2.get(j-40)-value2.get(j) <0 && value2.get(j)-value2.get(j+40) > 0) {
-                maxes.add(value2.get(j));
-                System.out.println("Max --> " + j);
-                max = value2.get(j);
-                min = avg;
-            }*/
+                mark[j] = -0.07;
+            } else { mark[j] = 0; }
+           
             j++;
             /*if (value2.get(j) <= avg + 1.5E-5 && value2.get(j) >= avg - 1.5E-5) {
             	addMin = true;
@@ -134,11 +130,11 @@ public class DataMarking {
         for (int k = 0; k < maxes.size(); k++) {
             System.out.println(fmax.get(k) + "\t" + maxes.get(k));
         }
-        /*for(int l = 0; l < value1.size(); l++){
+        for(int l = 0; l < value1.size(); l++){
             
-            System.out.println(value1.get(l) + "\t" +value2.get(l) + "\t");
-            if (l == 5) break;
-        }*/
+            System.out.println(value1.get(l) + "\t" +value2.get(l) + "\t" + mark[l]);
+            
+        }
     }
     
 }
