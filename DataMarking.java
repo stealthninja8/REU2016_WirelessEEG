@@ -1,9 +1,11 @@
+package datamarking;
+
 /*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
+* Iowa State University 
+* 07/11/16
+* Andrew Zaman, Steve Heinisch, Zoe Kendall, Samantha Morris
 */
-package data.marking;
+//package data.marking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,129 +13,122 @@ import static java.lang.Math.abs;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.text.DecimalFormat;
-/**
- * /**
- *
- * @author neurophys
- */
+
 public class DataMarking {
     
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) throws Exception {
-        // TODO code application logic here
-        String dataFileName = "B:/REU Data/SteveMove70_Trial1.exp";
-        ArrayList<Double> value1 = new ArrayList<Double>();
-        ArrayList<Double> value2 = new ArrayList<Double>();
+        String dataFileName = "C:/Users/Sam/Desktop/SteveMove70_Trial1.exp";
+        ArrayList<Double> frames = new ArrayList<Double>();
+        ArrayList<Double> values = new ArrayList<Double>();
         
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(2);
         
-        
-        int i =0;
-        
-        
-        
-        /**
-         * Creating a buffered reader to read the file
-         */
-        BufferedReader bReader = new BufferedReader(
-                new FileReader(dataFileName));
-        
+        // Create buffered reader to read in exp file. 
+        BufferedReader bReader = new BufferedReader(new FileReader(dataFileName));
+       
+        // Create iterator. 
+        int i = 0;
         String line;
         
-        /**
-         * Looping the read block until all lines in the file are read.
-         */
-        while ((line = bReader.readLine()) != null) {
-            
-            
-            /**
-             * Splitting the content of tabbed separated line
-             */
+        // Read in frames and x values from file and place them in respective arrays. 
+        while ((line = bReader.readLine()) != null) 
+        {
+            //Split the content of tabbed separated line. 
             String datavalue[] = line.split("\t");
+            // Add the values to respective arrays. 
             try {
-            value1.add(Double.parseDouble(datavalue[0])); //frame
-            value2.add(Double.parseDouble(datavalue[1])); //x
+                frames.add(Double.parseDouble(datavalue[0])); 
+                values.add(Double.parseDouble(datavalue[1])); 
             } catch (NumberFormatException nf) { continue; }
             
-            
-            /**
-             * Printing the value read from file to the console
-             */
-            //System.out.println(value1.get(i) + "\t" + value2.get(i) + "\t" + value3.get(i) + "\t"
-            // + value4.get(i));
             i++;
         }
+        // Close the file. 
         bReader.close();
         
+        // Create iterator. 
         int j = 0;
-        while(value1.get(j) != 0.0) {
-        value1.remove(j);
+        // Remove all numbers in first column before 0, including measurement rate and data capture period.  
+        while(frames.get(j) != 0.0) 
+        {
+            frames.remove(j);
         }
         
+        // Get sum of all position values. 
         double sum = 0;
-        for (double val : value2) {
+        for (double val : values) 
+        {
             sum += val;
         }
-        double avg = sum/value2.size();
+        // Calculate average position. . 
+        double avg = sum/values.size();
         
-        double[] mark = new double[value1.size()];
+        // Create array of doubles for min/max marks. 
+        double[] mark = new double[frames.size()];
+        
+        // Create lists of doubles for max and min values. 
         ArrayList<Double> maxes = new ArrayList<Double>();
         ArrayList<Double> mins = new ArrayList<Double>();
+        
+        // Create lists of doubles for max and min position marks. 
         ArrayList<Double> fmin = new ArrayList<Double>();
         ArrayList<Double> fmax = new ArrayList<Double>();
         
+        // Create booleans to indicate if a max/min should be marked.  
         boolean addMax = true;
         boolean addMin = true;
-        j = 175;
-        while(j<value2.size()-40){
-        	//System.out.println((value2.get(j+40)-value2.get(j)));
-            
-            if ((value2.get(j+40)-value2.get(j))/40 <= -0.000055 && addMax && value2.get(j) > avg ) {
-                if (fmin.size() > 0 && j > fmin.get(fmin.size()-1) + 500) {
-                maxes.add(value2.get(j-175));
-                fmax.add(value1.get(j-175));
-                addMax = false;
-                addMin = true;
-                mark[j] = -0.03;
-                } else if (fmin.size() == 0) {
-                    maxes.add(value2.get(j-175));
-                fmax.add(value1.get(j-175));
-                addMax = false;
-                addMin = true;
-                mark[j] = -0.03;
+        
+        int pos;
+        // Start at frame 175 and find position maxes and mins. 
+        for(pos = 175; pos < values.size() - 40; pos++)
+        {   
+            // Add a max. 
+            // If the the forward slope is decreasing, addMax is true, and the position is greater than the average, 
+            // and the max to add is at least 500 frames past the last min, add a max to maxes and its position to the fmax. 
+            if ((values.get(pos + 40)-values.get(pos))/40 <= -0.000055 && addMax && values.get(pos) > avg ) 
+            {
+                if (fmin.size() > 0 && pos > fmin.get(fmin.size()-1) + 500) 
+                {
+                    maxes.add(values.get(pos-175));
+                    fmax.add(frames.get(pos-175));
+                    addMax = false;
+                    addMin = true;
+                    mark[pos] = -0.03;
+                } 
+                else if (fmin.size() == 0) 
+                {
+                    maxes.add(values.get(pos-175));
+                    fmax.add(values.get(pos-175));
+                    // Set addMax to false and addMin to true so a min will be added next. 
+                     addMax = false;
+                    addMin = true;
+                    // Mark the max in the mark array. 
+                    mark[pos] = -0.03;
                 }
-            } else if ((value2.get(j+40)-value2.get(j))/40 >= 0.00001 && addMin && value2.get(j) < avg) {
-                mins.add(value2.get(j-175));
-                fmin.add(value1.get(j-175));
+            }
+            // Add a min. 
+            // If the the forward slope is increasing, addMin is true, and the position is less than the average,
+            // add a max to maxes and its position to the fmax. 
+            else if ((values.get(pos+40)-values.get(pos))/40 >= 0.00001 && addMin && values.get(pos) < avg) 
+            {
+                mins.add(values.get(pos-175));
+                fmin.add(frames.get(pos-175));
                 addMin = false;
                 addMax = true;
-                mark[j] = -0.07;
-            } else { mark[j] = 0; }
-           
-            j++;
-            /*if (value2.get(j) <= avg + 1.5E-5 && value2.get(j) >= avg - 1.5E-5) {
-            	addMin = true;
-            	addMax = true;
-            }*/
-        }
-        System.out.println("maxes --> " + maxes.size()  + "\t" + "mins --> " + mins.size());
-
-        System.out.println("MINS");
-        for (int k = 0; k < mins.size(); k++) {
-            System.out.println(fmin.get(k) + "\t" + mins.get(k));
+                // Mark the min in the mark array. 
+                mark[pos] = -0.07;
+            } 
+            else 
+            { 
+                mark[pos] = 0; 
+            }
         }
         
-        System.out.println("MAXES");
-        for (int k = 0; k < maxes.size(); k++) {
-            System.out.println(fmax.get(k) + "\t" + maxes.get(k));
-        }
-        for(int l = 0; l < value1.size(); l++){
-            
-            System.out.println(value1.get(l) + "\t" +value2.get(l) + "\t" + mark[l]);
-            
+       // Print frame number, value, and the mark status at that location (max or min). 
+        for(int l = 0; l < frames.size(); l++)
+        {
+            System.out.println(frames.get(l) + "\t" +values.get(l) + "\t" + mark[l]);     
         }
     }
     
