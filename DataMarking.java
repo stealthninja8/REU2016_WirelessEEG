@@ -1,11 +1,11 @@
-package datamarking;
+//package data marking;
 
 /*
 * Iowa State University 
 * 07/11/16
 * Andrew Zaman, Steve Heinisch, Zoe Kendall, Samantha Morris
 */
-//package data.marking;
+package data.marking;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -16,16 +16,15 @@ import java.text.DecimalFormat;
 
 public class DataMarking {
     
-    public static void main(String[] args) throws Exception {
-        String dataFileName = "C:/Users/Sam/Desktop/SteveMove70_Trial1.exp";
-        ArrayList<Double> frames = new ArrayList<Double>();
-        ArrayList<Double> values = new ArrayList<Double>();
-        
+    private static ArrayList<Double> frames = new ArrayList<Double>();
+    private static ArrayList<Double> values = new ArrayList<Double>();
+    
+    private static void readFile( String fileName ) throws Exception {
         DecimalFormat df = new DecimalFormat();
         df.setMaximumFractionDigits(2);
         
         // Create buffered reader to read in exp file. 
-        BufferedReader bReader = new BufferedReader(new FileReader(dataFileName));
+        BufferedReader bReader = new BufferedReader(new FileReader(fileName));
        
         // Create iterator. 
         int i = 0;
@@ -46,7 +45,9 @@ public class DataMarking {
         }
         // Close the file. 
         bReader.close();
-        
+    }
+    
+    private static void mark() {
         // Create iterator. 
         int j = 0;
         // Remove all numbers in first column before 0, including measurement rate and data capture period.  
@@ -81,6 +82,7 @@ public class DataMarking {
         
         int pos;
         // Start at frame 175 and find position maxes and mins. 
+        // The position is inverted
         for(pos = 175; pos < values.size() - 40; pos++)
         {   
             // Add a max. 
@@ -123,13 +125,51 @@ public class DataMarking {
             { 
                 mark[pos] = 0; 
             }
+            
+        }
+                
+        ArrayList<Double> ampl = new ArrayList<Double>();
+        double maxFrame = 0; int maxIndex = 0; int minIndex = 0; double minFrame =0;
+        for (int m = 0; m < fmax.size(); m++) {
+            if (fmax.get(m) > 2000) {
+                maxFrame = fmax.get(m);
+                maxIndex = m;
+                break;
+            }
+        }
+        for (int n = 0; n < fmin.size(); n++) {
+            if (fmin.get(n) > maxFrame) {
+                minIndex = n;
+                minFrame = fmin.get(n);
+                break;
+            }
         }
         
-       // Print frame number, value, and the mark status at that location (max or min). 
-        for(int l = 0; l < frames.size(); l++)
-        {
-            System.out.println(frames.get(l) + "\t" +values.get(l) + "\t" + mark[l]);     
+        ArrayList<Double> imi = new ArrayList<Double>();
+        while (minFrame < 18000) {
+            ampl.add(abs(mins.get(minIndex++)) - abs(maxes.get(maxIndex++)));
+            try{
+            minFrame = fmin.get(minIndex);
+            if (minFrame < 18000)
+                imi.add((fmin.get(minIndex)-fmin.get(minIndex-1))/2048);
+            } catch (IndexOutOfBoundsException e) { break; }
         }
+        System.out.println("AMPLITUDES");
+        for (double amp : ampl)
+            System.out.println(amp);
+        
+        System.out.println("IMI");
+        for(double q : imi) System.out.println(q);
+    }
+    
+    public static void main(String[] args) throws Exception {
+        Scanner scanner = new Scanner(System.in);
+        String dataFileName = scanner.nextLine();
+        
+        readFile(dataFileName);
+        
+        mark();
+        
     }
     
 }
