@@ -45,6 +45,7 @@ public class DataMarking {
         }
         // Close the file. 
         bReader.close();
+        mark();
     }
     
     private static void mark() {
@@ -103,7 +104,7 @@ public class DataMarking {
                     maxes.add(values.get(pos-175));
                     fmax.add(values.get(pos-175));
                     // Set addMax to false and addMin to true so a min will be added next. 
-                     addMax = false;
+                    addMax = false;
                     addMin = true;
                     // Mark the max in the mark array. 
                     mark[pos] = -0.03;
@@ -125,10 +126,10 @@ public class DataMarking {
             { 
                 mark[pos] = 0; 
             }
-            
         }
-                
+            
         ArrayList<Double> ampl = new ArrayList<Double>();
+        // Get index of the first maximum whose frame number is greater than 2000. 
         double maxFrame = 0; int maxIndex = 0; int minIndex = 0; double minFrame =0;
         for (int m = 0; m < fmax.size(); m++) {
             if (fmax.get(m) > 2000) {
@@ -137,6 +138,8 @@ public class DataMarking {
                 break;
             }
         }
+        
+        // Get the first min's frame number and its index. 
         for (int n = 0; n < fmin.size(); n++) {
             if (fmin.get(n) > maxFrame) {
                 minIndex = n;
@@ -147,6 +150,7 @@ public class DataMarking {
         
         ArrayList<Double> imi = new ArrayList<Double>();
         while (minFrame < 18000) {
+            // Calculate amplitudes up to the last 2000 frames and add them to ampl ArrayList.
             ampl.add(abs(mins.get(minIndex++)) - abs(maxes.get(maxIndex++)));
             try{
             minFrame = fmin.get(minIndex);
@@ -154,22 +158,23 @@ public class DataMarking {
                 imi.add((fmin.get(minIndex)-fmin.get(minIndex-1))/2048);
             } catch (IndexOutOfBoundsException e) { break; }
         }
+        
+        // Print the amplitudes. 
         System.out.println("AMPLITUDES");
         for (double amp : ampl)
             System.out.println(amp);
         
+        // Print the wavelengths. 
         System.out.println("IMI");
         for(double q : imi) System.out.println(q);
     }
     
     public static void main(String[] args) throws Exception {
+        // Scan in the file to read. 
         Scanner scanner = new Scanner(System.in);
         String dataFileName = scanner.nextLine();
-        
+        // Read the file. 
         readFile(dataFileName);
-        
-        mark();
-        
     }
     
 }
