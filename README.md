@@ -7,10 +7,10 @@ The Java program for marking and analyzing the kinematic data runs through a sim
 
 Once downloaded as a .zip file, extract the contents to your desired location.
 
-#To run through an IDE (such as NetBeans or Eclipse):
+###To run through an IDE (such as NetBeans or Eclipse):
 Open EEG_app.java in your IDE and run from there.
 
-#To run from the command line:
+###To run from the command line:
 Navigate to the location of the extracted files, and enter the eeggui folder.
 <pre><code>
 javac *.java
