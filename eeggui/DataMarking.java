@@ -65,14 +65,23 @@ public class DataMarking {
 		String name = files[0].substring(files[0].lastIndexOf("\\")+1);
 		name = name.substring(0, name.indexOf("M"));
 
-		/*ArrayList<Double> amplDiffs = new ArrayList<Double>();
+		ArrayList<Double> amplDiffs = new ArrayList<Double>();
 		ArrayList<Double> imiDiffs = new ArrayList<Double>();
 		
-		
-		for (int i = 0; i < wetAmpl.size(); i++)
-			amplDiffs.add(dryAmpl.get(i) - wetAmpl.get(i));
-		for (int j = 0; j < wetIMI.size(); j++)
-			imiDiffs.add(dryIMI.get(j) - wetIMI.get(j));*/
+		if (wetAmpl.size() < dryAmpl.size()) {
+			for (int i = 0; i < wetAmpl.size(); i++)
+				amplDiffs.add(dryAmpl.get(i) - wetAmpl.get(i));
+		} else {
+			for (int i = 0; i < dryAmpl.size(); i++)
+				amplDiffs.add(dryAmpl.get(i) - wetAmpl.get(i));
+		}
+		if (wetIMI.size() < dryIMI.size()) {
+			for (int j = 0; j < wetIMI.size(); j++)
+				imiDiffs.add(dryIMI.get(j) - wetIMI.get(j));
+		} else {
+			for (int j = 0; j < dryIMI.size(); j++)
+				imiDiffs.add(dryIMI.get(j) - wetIMI.get(j));
+		}
 		
 		System.out.println(name.toUpperCase()+"\nAMPLITUDES:");
 		if (wetAmpl.size() == dryAmpl.size()) {
@@ -135,7 +144,7 @@ public class DataMarking {
 		System.out.println("dry IMI (s): " + meanDryIMI + " +/- " + stddevDryIMI);
 		
 		// compute t statistic
-		/*double meanAmplDiff = average(amplDiffs);
+		double meanAmplDiff = average(amplDiffs);
 		double meanIMIDiff = average(imiDiffs);
 		double amplDiffstd = stddev(amplDiffs, meanAmplDiff);
 		double imiDiffstd = stddev(imiDiffs, meanIMIDiff);
@@ -144,7 +153,7 @@ public class DataMarking {
 		double T_ampl = meanAmplDiff/stderrAmpl;
 		double T_imi = meanIMIDiff/stderrIMI;
 		System.out.println("amplitude T statistic: " + T_ampl);
-		System.out.println("IMI T statistic: " + T_imi);*/
+		System.out.println("IMI T statistic: " + T_imi);
 		System.out.println(">>>================================================================<<<");
 
 		// remove the last patient's data
